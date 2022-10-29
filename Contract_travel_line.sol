@@ -1,9 +1,9 @@
 /**
- *Submitted for verification at BscScan.com on 2022-09-09
+ *Submitted for verification at BscScan.com on 2022-10-29
 */
 
-// SPDX-License-Identifier: MIT
-
+// SPDX-License-Identifier: MIT                                                                               
+                                                    
 pragma solidity ^0.8.9;
 
 abstract contract Context {
@@ -602,7 +602,7 @@ contract Ownable is Context {
     address private _owner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
+    
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
@@ -869,31 +869,31 @@ contract Token is ERC20, Ownable {
     address public marketingWallet;
     address public devWallet;
     address public buyBackWallet;
-
+    
     uint8 private _decimals;
 
     bool public tradingActive = false;
     bool public swapEnabled = false;
-
+    
     uint256 public tradingActiveBlock;
-
+        
     uint256 public buyTotalFees;
     uint256 public buyMarketingFee;
     uint256 public buyLiquidityFee;
     uint256 public buyDevFee;
     uint256 public buyBuyBackFee;
-
+    
     uint256 public sellTotalFees;
     uint256 public sellMarketingFee;
     uint256 public sellLiquidityFee;
     uint256 public sellDevFee;
     uint256 public sellBuyBackFee;
-
+    
     uint256 public tokensForMarketing;
     uint256 public tokensForLiquidity;
     uint256 public tokensForDev;
     uint256 public tokensForBuyBack;
-
+    
     /******************/
 
     // exlcude from fees and max transaction amount
@@ -910,9 +910,9 @@ contract Token is ERC20, Ownable {
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
 
     event marketingWalletUpdated(address indexed newWallet, address indexed oldWallet);
-
+    
     event devWalletUpdated(address indexed newWallet, address indexed oldWallet);
-
+    
     event buyBackWalletUpdated(address indexed newWallet, address indexed oldWallet);
 
     event SwapAndLiquify(
@@ -922,7 +922,7 @@ contract Token is ERC20, Ownable {
     );
 
     event BuyBackTriggered(uint256 amount);
-
+    
     event OwnerForcedSwapBack(uint256 timestamp);
 
     modifier isAuth() {
@@ -939,13 +939,13 @@ contract Token is ERC20, Ownable {
         _decimals = 18;
 
         uint256 totalSupply = 120 * 1e6 * (10**_decimals);
-
+        
         buyMarketingFee = 1;
         buyLiquidityFee = 0;
         buyDevFee = 0;
         buyBuyBackFee = 0;
         buyTotalFees = buyMarketingFee + buyLiquidityFee + buyDevFee + buyBuyBackFee;
-
+        
         sellMarketingFee = 2;
         sellLiquidityFee = 0;
         sellDevFee = 0;
@@ -958,7 +958,7 @@ contract Token is ERC20, Ownable {
 
 
         address currentRouter;
-
+        
         //Adding Variables for all the routers for easier deployment for our customers.
         if (block.chainid == 56) {
             currentRouter = 0x10ED43C718714eb63d5aA57B78B54704E256024E; // PCS Router
@@ -983,7 +983,7 @@ contract Token is ERC20, Ownable {
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(currentRouter);
 
         uniswapV2Router = _uniswapV2Router;
-
+        
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
         _setAutomatedMarketMakerPair(address(uniswapV2Pair), true);
 
@@ -1017,7 +1017,7 @@ contract Token is ERC20, Ownable {
         swapEnabled = true;
         tradingActiveBlock = block.number;
     }
-
+        
     function airdropToWallets(address[] memory airdropWallets, uint256[] memory amounts) external isAuth returns (bool){
         require(!tradingActive, "Trading is already active, cannot airdrop after launch.");
         require(airdropWallets.length == amounts.length, "arrays must be the same length");
@@ -1029,16 +1029,16 @@ contract Token is ERC20, Ownable {
         }
         return true;
     }
-
+    
     function decimals() public view override returns (uint8) {
         return _decimals;
     }
-
+    
     // only use to disable contract sales if absolutely necessary (emergency use only)
     function updateSwapEnabled(bool enabled) external isAuth(){
         swapEnabled = enabled;
     }
-
+    
     function excludeFromFees(address account, bool excluded) public isAuth {
         _isExcludedFromFees[account] = excluded;
         emit ExcludeFromFees(account, excluded);
@@ -1049,7 +1049,7 @@ contract Token is ERC20, Ownable {
 
         _setAutomatedMarketMakerPair(pair, value);
     }
-
+    
     function _setAutomatedMarketMakerPair(address pair, bool value) private {
         automatedMarketMakerPairs[pair] = value;
 
@@ -1060,22 +1060,22 @@ contract Token is ERC20, Ownable {
         emit marketingWalletUpdated(newMarketingWallet, marketingWallet);
         marketingWallet = newMarketingWallet;
     }
-
+    
     function updateDevWallet(address newWallet) external onlyOwner {
         emit devWalletUpdated(newWallet, devWallet);
         devWallet = newWallet;
     }
-
+    
     function updateBuyBackWallet(address newWallet) external onlyOwner {
         emit buyBackWalletUpdated(newWallet, buyBackWallet);
         buyBackWallet = newWallet;
     }
-
+    
 
     function isExcludedFromFees(address account) external view returns(bool) {
         return _isExcludedFromFees[account];
     }
-
+    
     function _transfer(
         address from,
         address to,
@@ -1090,12 +1090,12 @@ contract Token is ERC20, Ownable {
             super._transfer(from, to, 0);
             return;
         }
-
+                
 		uint256 contractTokenBalance = balanceOf(address(this));
-
+        
         bool canSwap = contractTokenBalance > 0;
 
-        if(
+        if( 
             canSwap &&
             swapEnabled &&
             !swapping &&
@@ -1104,23 +1104,23 @@ contract Token is ERC20, Ownable {
             !_isExcludedFromFees[to]
         ) {
             swapping = true;
-
+            
             swapBack();
 
             swapping = false;
         }
-
+        
         bool takeFee = !swapping;
 
         // if any account belongs to _isExcludedFromFee account then remove the fee
         if(_isExcludedFromFees[from] || _isExcludedFromFees[to]) {
             takeFee = false;
         }
-
+        
         uint256 fees = 0;
         // only take fees on buys/sells, do not take on wallet transfers
         if(takeFee){
-
+            
             if(tradingActiveBlock == block.number && (automatedMarketMakerPairs[to] || automatedMarketMakerPairs[from])){
                 fees = amount.mul(99).div(100);
                 tokensForLiquidity += fees * 33 / 99;
@@ -1143,11 +1143,11 @@ contract Token is ERC20, Ownable {
                 tokensForMarketing += fees * buyMarketingFee / buyTotalFees;
                 tokensForBuyBack += fees * buyBuyBackFee / buyTotalFees;
             }
-
-            if(fees > 0){
+            
+            if(fees > 0){    
                 super._transfer(from, address(this), fees);
             }
-
+        	
         	amount -= fees;
         }
 
@@ -1171,9 +1171,9 @@ contract Token is ERC20, Ownable {
             address(this),
             block.timestamp
         );
-
+        
     }
-
+    
     function addLiquidity(uint256 tokenAmount, uint256 ethAmount) private {
         // approve token transfer to cover all possible scenarios
         _approve(address(this), address(uniswapV2Router), tokenAmount);
@@ -1194,39 +1194,39 @@ contract Token is ERC20, Ownable {
 
         uint256 totalTokensToSwap = tokensForLiquidity + tokensForMarketing + tokensForDev + tokensForBuyBack;
         bool success;
-
+        
         if(contractBalance == 0 || totalTokensToSwap == 0) {return;}
-
+        
         // Halve the amount of liquidity tokens
         uint256 liquidityTokens = contractBalance * tokensForLiquidity / totalTokensToSwap / 2;
         uint256 amountToSwapForETH = contractBalance.sub(liquidityTokens);
-
+        
         uint256 initialETHBalance = address(this).balance;
 
-        swapTokensForEth(amountToSwapForETH);
-
+        swapTokensForEth(amountToSwapForETH); 
+        
         uint256 ethBalance = address(this).balance.sub(initialETHBalance);
-
+        
         uint256 ethForMarketing = ethBalance.mul(tokensForMarketing).div(totalTokensToSwap);
         uint256 ethForDev = ethBalance.mul(tokensForDev).div(totalTokensToSwap);
         uint256 ethForBuyBack = ethBalance.mul(tokensForBuyBack).div(totalTokensToSwap);
-
+        
         uint256 ethForLiquidity = ethBalance - ethForMarketing - ethForDev - ethForBuyBack;
-
+        
         tokensForLiquidity = 0;
         tokensForMarketing = 0;
         tokensForDev = 0;
         tokensForBuyBack = 0;
-
+        
         (success,) = address(devWallet).call{value: ethForDev}("");
         (success,) = address(buyBackWallet).call{value: ethForBuyBack}("");
-
+        
         if(liquidityTokens > 0 && ethForLiquidity > 0){
             addLiquidity(liquidityTokens, ethForLiquidity);
             emit SwapAndLiquify(amountToSwapForETH, ethForLiquidity, tokensForLiquidity);
         }
-
+        
         (success,) = address(marketingWallet).call{value: address(this).balance}("");
-
+        
     }
 }
